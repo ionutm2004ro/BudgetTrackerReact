@@ -45,12 +45,12 @@ export default function App() {
   return (
     <div className="container">
       <div className="row min-vh-100">
-        <div className="col d-flex flex-column justify-content-center align-items-center">
+        <div className="col d-flex flex-column">
           {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && (
-            <div className="row">
-              <div className="col-6"><h2 class="text-primary mt-5">Transaction Table</h2></div>
-              <div className="col-6">
-                <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-primary btn-lg mt-4">Create new transaction</button>
+            <div className="row mt-4">
+              <div className="col-6"><h2 className="text-primary">Transaction Table</h2></div>
+              <div className="col-6 text-end">
+                <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-primary btn-lg">Create new transaction</button>
               </div>
             </div>
           )}
