@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import Constants from "./utilities/Constants"
+import TransactionCreateForm from "./components/TransactionCreateForm"
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
+  const [showingCreateNewTransactionForm, setShowingCreateNewTransactionForm] = useState(false);
 
   function getTransactions() {
-    const url = Constants.GET_ALL_TRANSACTIONS;
+    const url = Constants.API_URL_GET_ALL_TRANSACTIONS;
 
     fetch(url, {
-      method: 'GET', mode: 'cors'
+      method: 'GET',
     })
       .then(response => response.json())
       .then(transactionsFromServer => {
-        console.log(transactionsFromServer);
         setTransactions(transactionsFromServer)
       })
       .catch((error) => {
+        console.log(error);
         alert(error);
       });
   }
@@ -26,15 +28,17 @@ export default function App() {
         <div className="col d-flex flex-column justify-content-center align-items-center">
           <div>
             <h1>Transaction Table</h1>
-
-            <div className="mt-5">
-              <button onClick={getTransactions} className="btn btn-dark btn-lg w-100">Get transactions from server</button>
-              <button onClick={getTransactions} className="btn btn-secondary btn-lg w-100 mt-4">Create new transaction</button>
-            </div>
-
+            {showingCreateNewTransactionForm === false && (
+              <div className="mt-5">
+                <button onClick={getTransactions} className="btn btn-dark btn-lg w-100">Get transactions from server</button>
+                <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-secondary btn-lg w-100 mt-4">Create new transaction</button>
+              </div>
+            )}
           </div>
 
-          {transactions.length > 0 && renderTransactionsTable()}
+          {(transactions.length > 0 && showingCreateNewTransactionForm === false) && renderTransactionsTable()}
+
+          {showingCreateNewTransactionForm && <TransactionCreateForm onTransactionCreated={onTransactionCreated} />}
         </div>
       </div>
     </div>
@@ -70,5 +74,15 @@ export default function App() {
         {/* <button onClick={() => setTransactions([])} className="btn btn-dark btn-lg w-100">Empty Transaction Array</button> */}
       </div>
     )
+  }
+
+  function onTransactionCreated(createdTransaction) {
+    setShowingCreateNewTransactionForm(false);
+    if (createdTransaction === null) {
+      return;
+    }
+    alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
+
+    getTransactions();
   }
 }
