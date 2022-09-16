@@ -3,6 +3,18 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CORSPolicy",
+        builder =>
+        {
+            builder
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .WithOrigins("http://localhost:3000");
+        });
+});
+
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -22,6 +34,8 @@ app.UseSwaggerUI(swaggerUIOptions =>
 });
 
 app.UseHttpsRedirection();
+
+app.UseCors("CORSPolicy");
 
 app.MapGet("/get-all-transactions", async () => await TransactionsRepository.GetTransactionsAsync())
     .WithTags("Transactions Endpoints");
