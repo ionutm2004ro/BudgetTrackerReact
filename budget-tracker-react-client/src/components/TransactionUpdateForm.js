@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Constants from '../utilities/Constants'
 
-export default function TransactionCreateForm(props) {
+export default function TransactionUpdateForm(props) {
     const initalFormData = Object.freeze({
-        value: "0",
-        note: ""
+        value: props.transaction.value,
+        note: props.transaction.note
     });
 
     const [formData, setFormData] = useState(initalFormData);
@@ -19,20 +19,20 @@ export default function TransactionCreateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const transactionToCreate = {
-            transactionId: 0,
+        const transactionToUpdate = {
+            transactionId: props.transaction.transactionId,
             value: formData.value,
             note: formData.note
         };
 
-        const url = Constants.API_URL_CREATE_TRANSACTION;
+        const url = Constants.API_URL_UPDATE_TRANSACTION;
 
         fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(transactionToCreate)
+            body: JSON.stringify(transactionToUpdate)
         })
             .then(response => response.json())
             .then(responseFromServer => {
@@ -43,12 +43,12 @@ export default function TransactionCreateForm(props) {
                 alert(error);
             });
 
-        props.onTransactionCreated(transactionToCreate);
+        props.onTransactionUpdated(transactionToUpdate);
     };
 
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Create new Transaction</h1>
+            <h1 className="mt-5">Update Transaction</h1>
 
             <div className="mt-5">
                 <label className="h3 form-label">Transaction value</label>
@@ -63,7 +63,7 @@ export default function TransactionCreateForm(props) {
             </div>
 
             <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>
-            <button onClick={() => props.onTransactionCreated(null)} className="btn btn-secondary btn-lg w-100 mt-5">Cancel</button>
+            <button onClick={() => props.onTransactionUpdated(null)} className="btn btn-secondary btn-lg w-100 mt-5">Cancel</button>
         </form>
     );
 }

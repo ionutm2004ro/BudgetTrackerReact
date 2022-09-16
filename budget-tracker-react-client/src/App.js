@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import Constants from "./utilities/Constants"
 import TransactionCreateForm from "./components/TransactionCreateForm"
+import TransactionUpdateForm from "./components/TransactionUpdateForm"
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [showingCreateNewTransactionForm, setShowingCreateNewTransactionForm] = useState(false);
+  const [transactionCurrentlyBeingUpdated, setTransactionCurrentlyBeingUpdated] = useState(null);
 
   function getTransactions() {
     const url = Constants.API_URL_GET_ALL_TRANSACTIONS;
@@ -28,7 +30,7 @@ export default function App() {
         <div className="col d-flex flex-column justify-content-center align-items-center">
           <div>
             <h1>Transaction Table</h1>
-            {showingCreateNewTransactionForm === false && (
+            {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && (
               <div className="mt-5">
                 <button onClick={getTransactions} className="btn btn-dark btn-lg w-100">Get transactions from server</button>
                 <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-secondary btn-lg w-100 mt-4">Create new transaction</button>
@@ -36,9 +38,12 @@ export default function App() {
             )}
           </div>
 
-          {(transactions.length > 0 && showingCreateNewTransactionForm === false) && renderTransactionsTable()}
+          {(transactions.length > 0 && showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && renderTransactionsTable()}
 
           {showingCreateNewTransactionForm && <TransactionCreateForm onTransactionCreated={onTransactionCreated} />}
+
+          {transactionCurrentlyBeingUpdated !== null && <TransactionUpdateForm transaction={transactionCurrentlyBeingUpdated} onTransactionUpdated={onTransactionUpdated} />}
+
         </div>
       </div>
     </div>
@@ -63,7 +68,7 @@ export default function App() {
                 <td>{transaction.value}</td>
                 <td>{transaction.note}</td>
                 <td>
-                  <button className="btn btn-dark btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => setTransactionCurrentlyBeingUpdated(transaction)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
                   <button className="btn btn-secondary btn-lg">Delete</button>
                 </td>
               </tr>
@@ -84,5 +89,27 @@ export default function App() {
     alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
 
     getTransactions();
+  }
+
+  function onTransactionUpdated(updatedTransaction) {
+    setTransactionCurrentlyBeingUpdated(null);
+
+    if (updatedTransaction === null) {
+      return;
+    }
+    let transactionsCopy = [...transactions];
+
+    const index = transactionsCopy.findIndex((transactionsCopyTransaction, currentIndex) => {
+      if (transactionsCopyTransaction.transactionId === updatedTransaction.transactionId) {
+        return true;
+      }
+    });
+
+    if(index !== -1) {
+      transactionsCopy[index] = updatedTransaction;
+    }
+    setTransactions(transactionsCopy);
+
+    // alert(`transaction successfully updated`);
   }
 }
