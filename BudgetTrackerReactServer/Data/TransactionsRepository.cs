@@ -53,13 +53,13 @@ namespace BudgetTrackerReactServer.Data
         }
 
 
-        internal async static Task<bool> DeleteTransactionAsync(int transacitonId)
+        internal async static Task<bool> DeleteTransactionAsync(int transactionId)
         {
             using (var db = new AppDBContext())
             {
                 try
                 {
-                    Transaction transactionToDelete = await GetTransactionByIdAsync(transacitonId);
+                    Transaction transactionToDelete = await GetTransactionByIdAsync(transactionId);
                     db.Remove(transactionToDelete);
                     return await db.SaveChangesAsync() >= 1;
                 }

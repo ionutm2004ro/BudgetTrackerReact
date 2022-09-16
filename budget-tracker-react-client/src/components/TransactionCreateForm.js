@@ -48,10 +48,10 @@ export default function TransactionCreateForm(props) {
 
     return (
         <form className="w-100 px-5">
-            <h1 className="mt-5">Create new Transaction</h1>
+            <h1 className="mt-4 text-primary">Create new Transaction</h1>
 
             <div className="mt-5">
-                <label className="h3 form-label">Transaction value</label>
+                <label className="h3 form-label">Transaction Value</label>
                 <input value={formData.value} name="value" type="number" step="0.01" className="form-control"
                     onChange={handleChange} />
             </div>
@@ -62,8 +62,8 @@ export default function TransactionCreateForm(props) {
                     onChange={handleChange} />
             </div>
 
-            <button onClick={handleSubmit} className="btn btn-dark btn-lg w-100 mt-5">Submit</button>
-            <button onClick={() => props.onTransactionCreated(null)} className="btn btn-secondary btn-lg w-100 mt-5">Cancel</button>
+            <button onClick={handleSubmit} className="btn btn-primary btn-lg w-100 mt-5">Submit</button>
+            <button onClick={() => props.onTransactionCreated(null)} className="btn btn-secondary btn-lg w-100 mt-3">Cancel</button>
         </form>
     );
 }

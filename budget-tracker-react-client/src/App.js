@@ -23,20 +23,37 @@ export default function App() {
         alert(error);
       });
   }
+  getTransactions();
+
+  function deleteTransaction(transactionId) {
+    const url = `${Constants.API_URL_DELETE_TRANSACTION_BY_ID}/${transactionId}`;
+
+    fetch(url, {
+      method: 'DELETE',
+    })
+      .then(response => response.json())
+      .then(responseFromServer => {
+        console.log(responseFromServer);
+        onTransactionDeleted(transactionId);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+  }
 
   return (
     <div className="container">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column justify-content-center align-items-center">
-          <div>
-            <h1>Transaction Table</h1>
-            {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && (
-              <div className="mt-5">
-                <button onClick={getTransactions} className="btn btn-dark btn-lg w-100">Get transactions from server</button>
-                <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-secondary btn-lg w-100 mt-4">Create new transaction</button>
+          {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && (
+            <div className="row">
+              <div className="col-6"><h2 class="text-primary mt-5">Transaction Table</h2></div>
+              <div className="col-6">
+                <button onClick={() => setShowingCreateNewTransactionForm(true)} className="btn btn-primary btn-lg mt-4">Create new transaction</button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {(transactions.length > 0 && showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && renderTransactionsTable()}
 
@@ -51,11 +68,10 @@ export default function App() {
 
   function renderTransactionsTable() {
     return (
-      <div className="table-responsive mt-5">
+      <div className="table-responsive mt-4">
         <table className="table table-bordered border-dark">
           <thead>
             <tr>
-              <th scope="col">TransactionId (PK)</th>
               <th scope="col">Value</th>
               <th scope="col">Note</th>
               <th scope="col">CRUD Operations</th>
@@ -64,19 +80,16 @@ export default function App() {
           <tbody>
             {transactions.map((transaction) => (
               <tr key={transaction.transactionId}>
-                <th scope="row">{transaction.transactionId}</th>
                 <td>{transaction.value}</td>
                 <td>{transaction.note}</td>
                 <td>
-                  <button onClick={() => setTransactionCurrentlyBeingUpdated(transaction)} className="btn btn-dark btn-lg mx-3 my-3">Update</button>
-                  <button className="btn btn-secondary btn-lg">Delete</button>
+                  <button onClick={() => setTransactionCurrentlyBeingUpdated(transaction)} className="btn btn-primary btn-lg mx-3 my-3">Update</button>
+                  <button onClick={() => { if (window.confirm(`Are you sure you want to delete?`)) deleteTransaction(transaction.transactionId) }} className="btn btn-warning btn-lg">Delete</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
-        {/* <button onClick={() => setTransactions([])} className="btn btn-dark btn-lg w-100">Empty Transaction Array</button> */}
       </div>
     )
   }
@@ -86,7 +99,8 @@ export default function App() {
     if (createdTransaction === null) {
       return;
     }
-    alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
+
+    //alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
 
     getTransactions();
   }
@@ -105,11 +119,26 @@ export default function App() {
       }
     });
 
-    if(index !== -1) {
+    if (index !== -1) {
       transactionsCopy[index] = updatedTransaction;
     }
-    setTransactions(transactionsCopy);
 
-    // alert(`transaction successfully updated`);
+    setTransactions(transactionsCopy);
+  }
+
+  function onTransactionDeleted(deletedTransactionTransactionId) {
+    let transactionsCopy = [...transactions];
+
+    const index = transactionsCopy.findIndex((transactionsCopyTransaction, currentIndex) => {
+      if (transactionsCopyTransaction.transactionId === deletedTransactionTransactionId) {
+        return true;
+      }
+    });
+
+    if (index !== -1) {
+      transactionsCopy.splice(index, 1);
+    }
+
+    setTransactions(transactionsCopy);
   }
 }

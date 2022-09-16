@@ -82,9 +82,9 @@ app.MapPut("/update-transaction", async (Transaction transactionToUpdate) =>
     }
 }).WithTags("Transactions Endpoints");
 
-app.MapDelete("/delete-transaction-by-id/{transactionId}", async (int postId) =>
+app.MapDelete("/delete-transaction-by-id/{transactionId}", async (int transactionId) =>
 {
-    bool updateSuccessful = await TransactionsRepository.DeleteTransactionAsync(postId);
+    bool updateSuccessful = await TransactionsRepository.DeleteTransactionAsync(transactionId);
 
     if (updateSuccessful)
     {
