@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import Constants from "./utilities/Constants"
 import TransactionCreateForm from "./components/TransactionCreateForm"
 import TransactionUpdateForm from "./components/TransactionUpdateForm"
+import TransactionTable from "./components/TransactionTable";
 
 export default function App() {
   const [transactions, setTransactions] = useState([]);
   const [showingCreateNewTransactionForm, setShowingCreateNewTransactionForm] = useState(false);
-  const [transactionCurrentlyBeingUpdated, setTransactionCurrentlyBeingUpdated] = useState(null);
+  const [transactionCurrentlyBeingUpdated, setTransactionCurrentlyBeingUpdated] = useState(false);
+  const [reloadData, setReloadData] = useState(true);
 
   function getTransactions() {
     const url = Constants.API_URL_GET_ALL_TRANSACTIONS;
@@ -23,7 +25,6 @@ export default function App() {
         alert(error);
       });
   }
-  getTransactions();
 
   function deleteTransaction(transactionId) {
     const url = `${Constants.API_URL_DELETE_TRANSACTION_BY_ID}/${transactionId}`;
@@ -46,7 +47,7 @@ export default function App() {
     <div className="container">
       <div className="row min-vh-100">
         <div className="col d-flex flex-column">
-          {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && (
+          {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === false) && (
             <div className="row mt-4">
               <div className="col-6"><h2 className="text-primary">Transaction Table</h2></div>
               <div className="col-6 text-end">
@@ -55,26 +56,27 @@ export default function App() {
             </div>
           )}
 
-          {(transactions.length > 0 && showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === null) && renderTransactionsTable()}
+          {(showingCreateNewTransactionForm === false && transactionCurrentlyBeingUpdated === false) && renderTransactionsTable()}
 
           {showingCreateNewTransactionForm && <TransactionCreateForm onTransactionCreated={onTransactionCreated} />}
 
-          {transactionCurrentlyBeingUpdated !== null && <TransactionUpdateForm transaction={transactionCurrentlyBeingUpdated} onTransactionUpdated={onTransactionUpdated} />}
+          {transactionCurrentlyBeingUpdated !== false && <TransactionUpdateForm transaction={transactionCurrentlyBeingUpdated} onTransactionUpdated={onTransactionUpdated} />}
 
         </div>
       </div>
     </div>
   );
 
-  function renderTransactionsTable() {
+  function renderTransactionsTableOld() {
+    getTransactions();
     return (
       <div className="table-responsive mt-4">
-        <table className="table table-bordered border-dark">
+        <table className="table">
           <thead>
             <tr>
               <th scope="col">Value</th>
               <th scope="col">Note</th>
-              <th scope="col">CRUD Operations</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -94,19 +96,32 @@ export default function App() {
     )
   }
 
+  function renderTransactionsTable() {
+    if(reloadData){
+      setReloadData(false);
+      getTransactions();
+    }
+    return (
+      <div className="table-responsive mt-4">
+        <TransactionTable data={transactions}/>
+      </div>
+    )
+  }
+
   function onTransactionCreated(createdTransaction) {
     setShowingCreateNewTransactionForm(false);
     if (createdTransaction === null) {
       return;
     }
 
-    //alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
+    alert(`Transaction successfully created. After clicking OK, your new transaction of value "${createdTransaction.value}" will show up in the table below.`);
 
-    getTransactions();
+    setReloadData(true);
+    renderTransactionsTable();
   }
 
   function onTransactionUpdated(updatedTransaction) {
-    setTransactionCurrentlyBeingUpdated(null);
+    setTransactionCurrentlyBeingUpdated(false);
 
     if (updatedTransaction === null) {
       return;
