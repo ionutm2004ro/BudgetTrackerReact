@@ -1,21 +1,21 @@
 import React, { useMemo } from 'react'
 import { useTable, useSortBy, useGlobalFilter, useFilters } from 'react-table'
-import MOCK_DATA from './MOCK_DATA.json'
 import { COLUMNS } from './columns'
 import './table.css'
 import GlobalFilter from './GlobalFilter'
 import ColumnFilter from './ColumnFilter'
 
-const TransactionTable = ({ data }) => {
+const TransactionTable = (props) => {
 
     const columns = useMemo(() => COLUMNS, [])
     //const data = useMemo(() => MOCK_DATA, [])
+    const data = props.data
 
     const defaultColumn = useMemo(() => {
-        return{
+        return {
             Filter: ColumnFilter
         }
-    },[])
+    }, [])
 
     const {
         getTableProps,
@@ -44,12 +44,12 @@ const TransactionTable = ({ data }) => {
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {
-                                headerGroup.headers.map((column,i) => (
+                                headerGroup.headers.map((column, i) => (
                                     <th key={i}>
                                         <div {...column.getHeaderProps(column.getSortByToggleProps())}>
                                             {column.render('Header')}
                                             <span>
-                                                {column.isSorted ? (column.isSortedDesc ? ' 🠗' : ' 🠕') : (column.canFilter ? ' ⇅':'')}
+                                                {column.isSorted ? (column.isSortedDesc ? ' 🠗' : ' 🠕') : (column.canFilter ? ' ⇅' : '')}
                                             </span>
                                         </div>
                                         <div>{column.canFilter ? column.render('Filter') : null}</div>
@@ -67,7 +67,10 @@ const TransactionTable = ({ data }) => {
                                 <tr {...row.getRowProps()}>
                                     {
                                         row.cells.map((cell) => {
-                                            return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                            return <td {...cell.getCellProps()}>
+                                                {cell.render('Cell', 
+                                                { deleteTransaction: props.deleteTransaction, setTransactionCurrentlyBeingUpdated: props.setTransactionCurrentlyBeingUpdated })}
+                                            </td>
                                         })
                                     }
                                 </tr>

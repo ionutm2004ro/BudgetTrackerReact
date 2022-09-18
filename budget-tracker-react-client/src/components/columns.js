@@ -13,12 +13,17 @@ export const COLUMNS = [
         Header: '',
         accessor: 'transactionId',
         disableSortBy: true,
-        Cell: ({ cell }) => (
+        Cell: (props) => {
+            var rowId = props.cell.row.values.transactionId;
+            return (
             <div className="btn-group" role="group">
-                <button className="btn btn-primary me-1">Update {cell.row.values.transactionId}</button>
-                <button className="btn btn-warning">Delete {cell.row.values.transactionId}</button>
+                <button onClick={() => {props.setTransactionCurrentlyBeingUpdated(props.cell.row.values)}}
+                className="btn btn-primary me-1">Update</button>
+
+                <button onClick={() => {props.deleteTransaction(rowId)}}
+                className="btn btn-warning">Delete</button>
             </div>
-        ),
+        )},
         Filter: isDisabled,
         disableFilters:true
     }
