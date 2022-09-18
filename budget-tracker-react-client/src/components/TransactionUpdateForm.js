@@ -19,31 +19,35 @@ export default function TransactionUpdateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const transactionToUpdate = {
-            transactionId: props.transaction.transactionId,
-            value: formData.value,
-            note: formData.note
-        };
+        if (isNaN(formData.value) || formData.value === "") {
+            alert("Please input a valid value")
+        } else {
+            const transactionToUpdate = {
+                transactionId: props.transaction.transactionId,
+                value: formData.value,
+                note: formData.note
+            };
 
-        const url = Constants.API_URL_UPDATE_TRANSACTION;
+            const url = Constants.API_URL_UPDATE_TRANSACTION;
 
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transactionToUpdate)
-        })
-            .then(response => response.json())
-            .then(responseFromServer => {
-                console.log(responseFromServer);
+            fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(transactionToUpdate)
             })
-            .catch((error) => {
-                console.log(error);
-                alert(error);
-            });
+                .then(response => response.json())
+                .then(responseFromServer => {
+                    console.log(responseFromServer);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alert(error);
+                });
 
-        props.onTransactionUpdated(transactionToUpdate);
+            props.onTransactionUpdated(transactionToUpdate);
+        }
     };
 
     return (

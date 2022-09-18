@@ -19,31 +19,36 @@ export default function TransactionCreateForm(props) {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        const transactionToCreate = {
-            transactionId: 0,
-            value: formData.value,
-            note: formData.note
-        };
+        if (isNaN(formData.value) || formData.value === "") {
+            alert("Please input a valid value")
+        } else {
+            const transactionToCreate = {
+                transactionId: 0,
+                value: formData.value,
+                note: formData.note
+            };
 
-        const url = Constants.API_URL_CREATE_TRANSACTION;
+            const url = Constants.API_URL_CREATE_TRANSACTION;
 
-        fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(transactionToCreate)
-        })
-            .then(response => response.json())
-            .then(responseFromServer => {
-                console.log(responseFromServer);
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(transactionToCreate)
             })
-            .catch((error) => {
-                console.log(error);
-                alert(error);
-            });
+                .then(response => response.json())
+                .then(responseFromServer => {
+                    console.log(responseFromServer);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    alert(error);
+                });
 
-        props.onTransactionCreated(transactionToCreate);
+            props.onTransactionCreated(transactionToCreate);
+        }
+
     };
 
     return (
