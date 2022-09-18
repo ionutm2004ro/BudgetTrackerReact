@@ -24,7 +24,7 @@ export const COLUMNS = [
                 className="btn btn-warning">Delete</button>
             </div>
         )},
-        Filter: isDisabled,
-        disableFilters:true
+        disableFilters:true,
+        disableGlobalFilter: true
     }
 ]
